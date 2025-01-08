@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
 const fs = require("node:fs");
-const port = 3001;
+const cors = require('cors')
+const port = 4000;
+
 const findById = (req, res) => {
   const movieId = req.params.id;
   const data = fs.readFileSync("data/movies.json");
@@ -10,29 +12,28 @@ const findById = (req, res) => {
 
   res.send(movie);
 };
-
-// create
-app.get("/create", (req, res) => {
+app.use(cors())
+app.get("movies/create", (req, res) => {
   const name = req.query.name;
   const date = Date.now();
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
   const newData = {
     id: date,
-    name,
+    name: name
   };
   movies.push(newData);
   const content = JSON.stringify(movies, null, 4);
   fs.writeFileSync("data/movies.json", content);
-  res.send("done");
+  res.json({message:"bolson"});
 });
 // read
-app.get("/read", (req, res) => {
+app.get("/movies", (req, res) => {
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
-  res.send(movies);
+  res.json(movies);
 });
-// details
+
 app.get("/details", (req, res) => {
   const movieId = req.query.id;
   const data = fs.readFileSync("data/movies.json");
@@ -83,6 +84,7 @@ app.get("/delete", (req, res) => {
   res.send("done");
 });
 app.get("/", (req, res) => {
+
   res.send("hi");
 });
 // FindById
@@ -120,6 +122,8 @@ app.delete("data/movies/:id", (req, res) => {
   }
 });
 
+
+
 // const movieString = JSON.stringify(updatedMovies, null, 4);
 // fs.readFileSync("data/movies.json", movieString);
 // const movie = JSON.parse(data)
@@ -129,10 +133,7 @@ app.delete("data/movies/:id", (req, res) => {
 // });
 
 app.listen(port, () => {
-  console.log(`read, http://localhost:${port}`);
-  console.log(`create, http://localhost:${port}/create?name=`);
-  console.log(`update, http://localhost:${port}/update?name=&id=`);
-  console.log(`delete, http://localhost:${port}/delete?id=`);
-  //   console.log(`findById, http://localhost:${port}/movies/findById:id=`);
+  console.log(`movies, http://localhost:${port}`);
+  
   //   console.log(`deleteById, http://localhost:${port}/deleteById:id=`);
 });
