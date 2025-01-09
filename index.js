@@ -4,6 +4,9 @@ const fs = require("node:fs");
 const cors = require('cors')
 const port = 4000;
 
+app.use(express.json())
+app.use(cors())
+
 const findById = (req, res) => {
   const movieId = req.params.id;
   const data = fs.readFileSync("data/movies.json");
@@ -12,8 +15,8 @@ const findById = (req, res) => {
 
   res.send(movie);
 };
-app.use(cors())
-app.get("movies/create", (req, res) => {
+
+app.post("movies/:id", (req, res) => {
   const name = req.query.name;
   const date = Date.now();
   const data = fs.readFileSync("data/movies.json");
@@ -44,7 +47,7 @@ app.get("/details", (req, res) => {
 
 // update
 
-app.get("/update", (req, res) => {
+app.put("/update", (req, res) => {
   const id = req.query.id;
   const changedName = req.query.name;
   // const date = Date.now()
