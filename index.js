@@ -1,9 +1,11 @@
 const express = require("express");
 const app = express();
 const fs = require("node:fs");
-const cors = require('cors')
+const cors = require("cors");
 const port = 4000;
 
+app.use(express.json());
+app.use(cors());
 const findById = (req, res) => {
   const movieId = req.params.id;
   const data = fs.readFileSync("data/movies.json");
@@ -12,20 +14,20 @@ const findById = (req, res) => {
 
   res.send(movie);
 };
-app.use(cors())
-app.get("movies/create", (req, res) => {
+
+app.post("movies/:id", (req, res) => {
   const name = req.query.name;
   const date = Date.now();
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
   const newData = {
     id: date,
-    name: name
+    name: name,
   };
   movies.push(newData);
   const content = JSON.stringify(movies, null, 4);
   fs.writeFileSync("data/movies.json", content);
-  res.json({message:"bolson"});
+  res.json({ message: "bolson" });
 });
 // read
 app.get("/movies", (req, res) => {
@@ -44,8 +46,10 @@ app.get("/details", (req, res) => {
 
 // update
 
-app.get("/update", (req, res) => {
-  const id = req.query.id;
+app.put("/movie/:id", (req, res) => {
+  const id = req.params.id;
+
+  const body = req.body;
   const changedName = req.query.name;
   // const date = Date.now()
   const data = fs.readFileSync("data/movies.json");
@@ -66,8 +70,8 @@ app.get("/update", (req, res) => {
   res.send("done");
 });
 
-app.get("/delete", (req, res) => {
-  const id = req.query.id;
+app.delete("/movie/:id", (req, res) => {
+  const id = req.params.id;
   // const changedName = req.query.name
   // const date = Date.now()
   const data = fs.readFileSync("data/movies.json");
@@ -84,7 +88,6 @@ app.get("/delete", (req, res) => {
   res.send("done");
 });
 app.get("/", (req, res) => {
-
   res.send("hi");
 });
 // FindById
@@ -122,8 +125,6 @@ app.delete("data/movies/:id", (req, res) => {
   }
 });
 
-
-
 // const movieString = JSON.stringify(updatedMovies, null, 4);
 // fs.readFileSync("data/movies.json", movieString);
 // const movie = JSON.parse(data)
@@ -134,6 +135,6 @@ app.delete("data/movies/:id", (req, res) => {
 
 app.listen(port, () => {
   console.log(`movies, http://localhost:${port}`);
-  
+
   //   console.log(`deleteById, http://localhost:${port}/deleteById:id=`);
 });
