@@ -44,26 +44,42 @@ app.get("/movies", (req, res) => {
 // update
 
 app.put("/movie/:id", (req, res) => {
-  const id = req.params.id;
-  const changedName = req.params.name;
-  // const date = Date.now()
+  const id = Number(req.params.id);
+  const changedName = req.body.name;
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
-  const content = movies.map((movie) => {
-    if (movie.id == id) {
-      const edit = {
-        ...movie,
-        name: changedName,
-      };
-      return edit;
-    } else {
-      return movie;
+
+  const updatedMovies = movies.map((movie) => {
+    if (movie.id === id) {
+      return { ...movie, name: changedName };
     }
+    return movie;
   });
-  const contentJSON = JSON.stringify(content, null, 4);
-  fs.writeFileSync("data/movies.json", contentJSON);
-  res.send("done");
+
+  fs.writeFileSync("data/movies.json", JSON.stringify(updatedMovies, null, 4));
+  res.send("Movie updated successfully");
 });
+// app.put("/movie/:id", (req, res) => {
+//   const id = req.params.id;
+//   const changedName = req.params.name;
+//   // const date = Date.now()
+//   const data = fs.readFileSync("data/movies.json");
+//   const movies = JSON.parse(data);
+//   const content = movies.map((movie) => {
+//     if (movie.id == id) {
+//       const edit = {
+//         ...movie,
+//         name: changedName,
+//       };
+//       return edit;
+//     } else {
+//       return movie;
+//     }
+//   });
+//   const contentJSON = JSON.stringify(content, null, 4);
+//   fs.writeFileSync("data/movies.json", contentJSON);
+//   res.send("done");
+// });
 
 // app.delete("/movie/:id", (req, res) => {
 //   const id = req.params.id;
@@ -97,48 +113,58 @@ app.get("/details/:id", (req, res) => {
 // app.get("/data/movies/:id", findById);
 
 //DeleteId
+// app.delete("/movies/:id", (req, res) => {
+//   // const movies = findAllMovies();
+
+//   //Method 1
+//   const updatedMovies = movies.filter((e) => e.id !== Number(movieId));
+
+//   //Method 2
+//   //unshih read
+//   const data = fs.readFileSync("data/movies.json");
+//   const movies = JSON.parse(data);
+//   // find
+//   const movieId = req.params.id;
+//   const oneMovieIdx = movies.findIndex((movie) => movie.id === Number(movieId));
+//   //delete
+//   movies.splice(oneMovieIdx, 1);
+//   fs.writeFileSync(
+//     "data/movies.json",
+//     JSON.stringify(movies, null, 4),
+//     "utf-8"
+//   );
+//   res.send("movie deleted");
 app.delete("/movies/:id", (req, res) => {
-  // const movies = findAllMovies();
-
-  //Method 1
-  const updatedMovies = movies.filter((e) => e.id !== Number(movieId));
-
-  //Method 2
-  //unshih read
+  const movieId = Number(req.params.id);
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
-  // find
-  const movieId = req.params.id;
-  const oneMovieIdx = movies.findIndex((movie) => movie.id === Number(movieId));
-  //delete
-  movies.splice(oneMovieIdx, 1);
-  fs.writeFileSync(
-    "data/movies.json",
-    JSON.stringify(movies, null, 4),
-    "utf-8"
-  );
-  res.send("movie deleted");
-  // try {
-  //   const oneMovieIdx = movies.findIndex((e) => e.id === Number(movieId));
-  //   const restMovies = movies.splice(oneMovieIdx, 1);
 
-  //   if (oneMovieIdx < 0) {
-  //     res.json({
-  //       message: "Movie not found",
-  //     });
-  //   }
-  //   const moviesString = JSON.stringify(restMovies, null, 4);
-  //   fs.writeFileSync(data / movies.json, moviesString);
+  const updatedMovies = movies.filter((movie) => movie.id !== movieId);
 
-  //   res.json({
-  //     message: "Deleted",
-  //   });
-  // } catch (e) {
-  //   res.json({
-  //     message: e,
-  //   });
-  // }
+  fs.writeFileSync("data/movies.json", JSON.stringify(updatedMovies, null, 4));
+  res.send("Movie deleted successfully");
 });
+// try {
+//   const oneMovieIdx = movies.findIndex((e) => e.id === Number(movieId));
+//   const restMovies = movies.splice(oneMovieIdx, 1);
+
+//   if (oneMovieIdx < 0) {
+//     res.json({
+//       message: "Movie not found",
+//     });
+//   }
+//   const moviesString = JSON.stringify(restMovies, null, 4);
+//   fs.writeFileSync(data / movies.json, moviesString);
+
+//   res.json({
+//     message: "Deleted",
+//   });
+// } catch (e) {
+//   res.json({
+//     message: e,
+//   });
+// }
+// });
 
 // const movieString = JSON.stringify(updatedMovies, null, 4);
 // fs.readFileSync("data/movies.json", movieString);
