@@ -1,16 +1,20 @@
-const express = require("express");
+import express, { Request, Response } from "express";
 const app = express();
 const fs = require("node:fs");
 const cors = require("cors");
 const port = 4000;
 
+type Movie = {
+  id: number;
+  name: string;
+};
 app.use(express.json());
 app.use(cors());
-const findById = (req, res) => {
+const findById = (req: Request, res: Response) => {
   const movieId = req.params.id;
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
-  const movie = movies.find((movie) => movie.id === Number(movieId));
+  const movie = movies.find((movie: Movie) => movie.id === Number(movieId));
 
   res.send(movie);
 };
@@ -43,17 +47,22 @@ app.get("/movies", (req, res) => {
 
 // update
 
-app.put("/movie/:id", (req, res) => {
+app.put("/movie/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const changedName = req.body.name;
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
 
-  const updatedMovies = movies.map((movie) => {
-    if (movie.id === id) {
-      return { ...movie, name: changedName };
+  const updatedMovies = movies.map((movie: Movie) => {
+    if (movie.id == id) {
+      const edit = {
+        ...movie,
+        name: changedName,
+      };
+      return edit;
+    } else {
+      return movie;
     }
-    return movie;
   });
 
   fs.writeFileSync("data/movies.json", JSON.stringify(updatedMovies, null, 4));
@@ -103,11 +112,11 @@ app.put("/movie/:id", (req, res) => {
 // });
 // FindById
 
-app.get("/details/:id", (req, res) => {
+app.get("/details/:id", (req: Request, res: Response) => {
   const movieId = req.params.id;
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
-  const movie = movies.find((movie) => movie.id === Number(movieId));
+  const movie = movies.find((movie: Movie) => movie.id === Number(movieId));
   res.send(movie);
 });
 // app.get("/data/movies/:id", findById);
@@ -134,12 +143,12 @@ app.get("/details/:id", (req, res) => {
 //     "utf-8"
 //   );
 //   res.send("movie deleted");
-app.delete("/movies/:id", (req, res) => {
+app.delete("/movies/:id", (req: Request, res: Response) => {
   const movieId = Number(req.params.id);
   const data = fs.readFileSync("data/movies.json");
   const movies = JSON.parse(data);
 
-  const updatedMovies = movies.filter((movie) => movie.id !== movieId);
+  const updatedMovies = movies.filter((movie: Movie) => movie.id !== movieId);
 
   fs.writeFileSync("data/movies.json", JSON.stringify(updatedMovies, null, 4));
   res.send("Movie deleted successfully");
@@ -176,9 +185,9 @@ app.delete("/movies/:id", (req, res) => {
 
 app.listen(port, () => {
   console.log(`movies, http://localhost:${port}`);
-  console.log(`create, http://localhost:${port}/create?name=`);
-  console.log(`update, http://localhost:${port}/update?name=&id=`);
-  console.log(`delete, http://localhost:${port}/delete?id=`);
+  // console.log(`create, http://localhost:${port}/create?name=`);
+  // console.log(`update, http://localhost:${port}/update?name=&id=`);
+  // console.log(`delete, http://localhost:${port}/delete?id=`);
 
   //   console.log(`deleteById, http://localhost:${port}/deleteById:id=`);
 });
